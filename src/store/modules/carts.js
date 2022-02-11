@@ -7,13 +7,14 @@ export default {
         }
     },
     mutations: {
-        addProductToCart(productData) {
-            const productInCartIndex = this.cart.items.findIndex(
+        addProductToCart(state, payload) {
+            const productData = payload.product
+            const productInCartIndex = state.items.findIndex(
               (ci) => ci.productId === productData.id
             );
       
             if (productInCartIndex >= 0) {
-              this.cart.items[productInCartIndex].qty++;
+              state.items[productInCartIndex].qty++;
             } else {
               const newItem = {
                 productId: productData.id,
@@ -22,20 +23,40 @@ export default {
                 price: productData.price,
                 qty: 1,
               };
-              this.cart.items.push(newItem);
+              state.items.push(newItem);
             }
-            this.cart.qty++;
-            this.cart.total += productData.price;
+            state.qty++;
+            state.total += productData.price;
           },
       
-          removeProductFromCart(prodId) {
+          removeProductFromCart(state, payload) {
+              const prodId = payload.productId
             const productInCartIndex = this.cart.items.findIndex(
               (cartItem) => cartItem.productId === prodId
             );
-            const prodData = this.cart.items[productInCartIndex];
-            this.cart.items.splice(productInCartIndex, 1);
-            this.cart.qty -= prodData.qty;
-            this.cart.total -= prodData.price * prodData.qty;
+            const prodData = state.items[productInCartIndex];
+            stateitems.splice(productInCartIndex, 1);
+            stateqty -= prodData.qty;
+            statetotal -= prodData.price * prodData.qty;
           },
+          actions: {
+             addToCart(context, payload){
+                context.commit('addProductToCart', payload)
+             },
+             removeFromCart(context, payload) {
+                context.commit('removeProductFromCart', payload)
+             }
+          },
+          getters: {
+              products() {
+                    return state.items
+              },
+              totalSum() {
+                return state.total
+              },
+              quantity(){
+                  return state.qty
+              }
+          }
     }
 }
